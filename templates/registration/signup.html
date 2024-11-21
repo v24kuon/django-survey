@@ -1,0 +1,185 @@
+{% extends "registration/base.html" %}
+
+{% block title %}新規登録{% endblock title %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-light py-4">
+                    <h3 class="text-center fw-light mb-0">新規登録</h3>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- 全体のエラーメッセージ -->
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger small py-2 mb-3">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- 基本情報 -->
+                        <h5 class="mb-3">基本情報</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="inputEmail" name="email" value="{{ form.email.value|default:'' }}" required>
+                                    <label for="inputEmail">メールアドレス</label>
+                                    <div class="invalid-feedback">
+                                        {% if form.email.errors %}
+                                        {% for error in form.email.errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                        {% endfor %}
+                                        {% else %}
+                                        有効なメールアドレスを入力してください。
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="password" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" id="inputPassword1" name="password1" required pattern=".{4,}">
+                                    <label for="inputPassword1">パスワード(4文字以上)</label>
+                                    <div class="invalid-feedback">
+                                        {% if form.password1.errors %}
+                                        {% for error in form.password1.errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                        {% endfor %}
+                                        {% else %}
+                                        4文字以上のパスワードを入力してください。
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="password" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" id="inputPassword2" name="password2" required>
+                                    <label for="inputPassword2">パスワード（確認）</label>
+                                    <div class="invalid-feedback">
+                                        {% if form.password2.errors %}
+                                        {% for error in form.password2.errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                        {% endfor %}
+                                        {% else %}
+                                        パスワードが一致しません。
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 個人情報 -->
+                        <h5 class="mb-3">個人情報</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control {% if form.full_name.errors %}is-invalid{% endif %}" id="inputFullName" name="full_name" value="{{ form.full_name.value|default:'' }}" required>
+                                    <label for="inputFullName">氏名</label>
+                                    <div class="invalid-feedback">
+                                        {% if form.full_name.errors %}
+                                        {% for error in form.full_name.errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                        {% endfor %}
+                                        {% else %}
+                                        氏名を入力してください。
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="tel" class="form-control {% if form.phone.errors %}is-invalid{% endif %}" id="inputPhone" name="phone" value="{{ form.phone.value|default:'' }}" required pattern="[0-9\-]*">
+                                    <label for="inputPhone">電話番号</label>
+                                    <div class="invalid-feedback">
+                                        {% if form.phone.errors %}
+                                        {% for error in form.phone.errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                        {% endfor %}
+                                        {% else %}
+                                        有効な電話番号を入力してください。
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control {% if form.postal_code.errors %}is-invalid{% endif %}" id="inputPostalCode" name="postal_code" value="{{ form.postal_code.value|default:'' }}" required pattern="\d{3}-?\d{4}">
+                                    <label for="inputPostalCode">郵便番号</label>
+                                    <div class="invalid-feedback">
+                                        {% if form.postal_code.errors %}
+                                        {% for error in form.postal_code.errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                        {% endfor %}
+                                        {% else %}
+                                        有効な郵便番号を入力してください。
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control {% if form.address.errors %}is-invalid{% endif %}" id="inputAddress" name="address" value="{{ form.address.value|default:'' }}" required>
+                                    <label for="inputAddress">住所</label>
+                                    <div class="invalid-feedback">
+                                        {% if form.address.errors %}
+                                        {% for error in form.address.errors %}
+                                        <p class="mb-0">{{ error }}</p>
+                                        {% endfor %}
+                                        {% else %}
+                                        住所を入力してください。
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- チラシ画像 -->
+                        <h5 class="mb-3">チラシ画像</h5>
+                        <div class="mb-4">
+                            <input type="file" class="form-control {% if form.flyer_image.errors %}is-invalid{% endif %}" id="inputFlyerImage" name="flyer_image" accept="image/*" required>
+                            <div class="invalid-feedback">
+                                {% if form.flyer_image.errors %}
+                                {% for error in form.flyer_image.errors %}
+                                <p class="mb-0">{{ error }}</p>
+                                {% endfor %}
+                                {% else %}
+                                画像ファイルを選択してください。
+                                {% endif %}
+                            </div>
+                            <div class="form-text">5MB以下の画像ファイル（jpg, jpeg, png, gif）を選択してください</div>
+                        </div>
+
+                        <!-- 送信ボタン -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">登録する</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- バリデーション用JavaScript -->
+<script>
+    (() => {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock content %}

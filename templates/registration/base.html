@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アンケート | {% block title %}{% endblock title %}</title>
+    <link rel="icon" href="{% static 'img/favicon.png' %}" type="image/png">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
+</head>
+
+<body class="bg-secondary">
+    <main>
+        {% block content %}{% endblock content %}
+    </main>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+
+</html>

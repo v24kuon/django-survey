@@ -1,0 +1,77 @@
+{% extends "registration/base.html" %}
+
+{% block title %}ログイン{% endblock title %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-5">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-light py-4">
+                    <h3 class="text-center fw-light mb-0">ログイン</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <!-- メールアドレス -->
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="inputEmail" name="username" required>
+                            <label for="inputEmail">メールアドレス</label>
+                            <div class="invalid-feedback">
+                                {% if form.email.errors %}
+                                {{ form.email.errors.0 }}
+                                {% else %}
+                                有効なメールアドレスを入力してください。
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- パスワード -->
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" id="inputPassword" name="password" required>
+                            <label for="inputPassword">パスワード</label>
+                            <div class="invalid-feedback">
+                                {% if form.password.errors %}
+                                {{ form.password.errors.0 }}
+                                {% else %}
+                                パスワードを入力してください。
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- エラーメッセージ -->
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger small py-2 mb-3">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+
+                        <!-- ボタングループ -->
+                        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
+                            <a href="{% url 'accounts:signup' %}" class="btn btn-secondary w-sm-auto">新規登録</a>
+                            <button type="submit" class="btn btn-primary w-sm-auto">ログイン</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- バリデーション用JavaScript -->
+<script>
+    (() => {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock content %}
