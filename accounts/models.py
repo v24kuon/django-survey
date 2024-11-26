@@ -29,6 +29,7 @@ class UserActivateToken(models.Model):
     user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     expired_at = models.DateTimeField()
+    extra_data = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         verbose_name = _('アクティベーショントークン')
@@ -113,21 +114,30 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = _('ユーザー')
         verbose_name_plural = _('ユーザー')
 
-    def send_verification_email(self, verification_url):
-        """認証メールを送信"""
+    def send_verification_email(self, verification_url, to_email=None):
+        """
+        認証メールを送信する
+
+        Args:
+            verification_url (str): 認証用URL
+            to_email (str, optional): 送信先メールアドレス。指定がない場合は、ユーザーのメールアドレスを使用。
+        """
         context = {
             'user': self,
             'verification_url': verification_url,
-            'expire_hours': 24,
+            'expire_hours': 1,  # トークンの有効期限（時間）
         }
+
         subject = 'メールアドレスの確認'
+        to_email = to_email or self.email
+
         text_message = render_to_string('registration/email/verification.txt', context)
         html_message = render_to_string('registration/email/verification.html', context)
 
         send_mail(
             subject=subject,
             message=text_message,
-            from_email=None,
-            recipient_list=[self.email],
+            from_email=None,  # settings.DEFAULT_FROM_EMAILが使用される
+            recipient_list=[to_email],
             html_message=html_message
         )

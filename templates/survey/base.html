@@ -14,11 +14,23 @@
     <!-- Navbar -->
     {% include "navbar.html" %}
 
-    <main>
-        {% block content %}{% endblock content %}
-    </main>
+    <div class="d-flex min-vh-100">
+        <!-- サイドバー -->
+        <div class="flex-shrink-0 bg-dark" style="width: 280px;">
+            {% include "sidebar.html" %}
+        </div>
 
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <!-- メインコンテンツ -->
+        <div class="flex-grow-1 overflow-auto bg-light">
+            <main class="h-100">
+                <div class="container-fluid px-4 py-3">
+                    {% block content %}{% endblock content %}
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     {% block script %}{% endblock script %}
 
 </body>

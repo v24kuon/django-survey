@@ -1,0 +1,57 @@
+<div class="d-flex flex-column p-3 text-bg-dark" style="width: 280px;">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <span class="fs-4">Sidebar</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="{% url 'home' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'home' %}active{% endif %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page" {% endif %}>
+                Home
+            </a>
+        </li>
+        <li class="nav-item">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed nav-link text-white w-100" data-bs-toggle="collapse" data-bs-target="#survey-collapse" aria-expanded="false">
+                Survey
+            </button>
+            <div class="collapse" id="survey-collapse">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li><a href="#" class="d-inline-flex text-decoration-none text-white ms-4 mb-1">Overview</a></li>
+                    <li><a href="#" class="d-inline-flex text-decoration-none text-white ms-4 mb-1">Weekly</a></li>
+                    <li><a href="#" class="d-inline-flex text-decoration-none text-white ms-4 mb-1">Monthly</a></li>
+                    <li><a href="#" class="d-inline-flex text-decoration-none text-white ms-4 mb-1">Annually</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link text-white">
+                Orders
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link text-white">
+                Products
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link text-white">
+                Customers
+            </a>
+        </li>
+    </ul>
+    <hr>
+    <div class="dropdown">
+        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+            <strong>mdo</strong>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" style="">
+            <li><a class="dropdown-item" href="#">New project...</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Sign out</a></li>
+        </ul>
+    </div>
+</div>

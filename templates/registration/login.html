@@ -1,4 +1,5 @@
 {% extends "registration/base.html" %}
+{% load static %}
 
 {% block title %}ログイン{% endblock title %}
 
@@ -58,20 +59,9 @@
     </div>
 </div>
 
-<!-- バリデーション用JavaScript -->
-<script>
-    (() => {
-        'use strict'
-        const forms = document.querySelectorAll('.needs-validation')
-        Array.from(forms).forEach(form => {
-            form.addEventListener('submit', event => {
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
-                form.classList.add('was-validated')
-            }, false)
-        })
-    })()
-</script>
 {% endblock content %}
+
+{% block extra_js %}
+<!-- バリデーション用JavaScript -->
+<script src="{% static 'js/form-validation.js' %}"></script>
+{% endblock extra_js %}

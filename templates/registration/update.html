@@ -1,0 +1,91 @@
+{% extends "registration/base.html" %}
+{% load static %}
+
+{% block title %}登録情報の編集{% endblock title %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-light py-4">
+                    <h3 class="text-center fw-light mb-0">登録情報の編集</h3>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- メッセージ -->
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <!-- 全体のエラーメッセージ -->
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger small py-2 mb-3">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        {% with show_password_fields=False show_email_field=False %}
+                        {% include "registration/_personal_info_fields.html" %}
+                        {% endwith %}
+
+                        <!-- ブース情報 -->
+                        <h5 class="mb-3">ブース情報（任意）</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control {% if form.organization_name.errors %}is-invalid{% endif %}" id="inputOrganizationName" name="organization_name" value="{{ form.organization_name.value|default:'' }}">
+                                    <label for="inputOrganizationName">団体名</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control {% if form.representative_name.errors %}is-invalid{% endif %}" id="inputRepresentativeName" name="representative_name" value="{{ form.representative_name.value|default:'' }}">
+                                    <label for="inputRepresentativeName">代表者名</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control {% if form.booth_name.errors %}is-invalid{% endif %}" id="inputBoothName" name="booth_name" value="{{ form.booth_name.value|default:'' }}">
+                                    <label for="inputBoothName">ブース名</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control {% if form.booth_summary.errors %}is-invalid{% endif %}" id="inputBoothSummary" name="booth_summary" style="height: 100px">{{ form.booth_summary.value|default:'' }}</textarea>
+                                    <label for="inputBoothSummary">ブースの概要</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control {% if form.booth_description.errors %}is-invalid{% endif %}" id="inputBoothDescription" name="booth_description" style="height: 200px">{{ form.booth_description.value|default:'' }}</textarea>
+                                    <label for="inputBoothDescription">ブースの詳細情報</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 送信ボタン -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">更新する</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<!-- バリデーション用JavaScript -->
+<script src="{% static 'js/form-validation.js' %}"></script>
+{% endblock extra_js %}

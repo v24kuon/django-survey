@@ -12,11 +12,17 @@ from . import views
 
 app_name = 'accounts'
 
+class AnonymousUserLoginView(views.AnonymousUserRequiredMixin, auth_views.LoginView):
+    """未ログインユーザー専用のログインビュー"""
+    form_class = EmailAuthenticationForm
+    template_name = 'registration/login.html'
+    redirect_authenticated_user = True
+
 urlpatterns = [
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path('verify-email/<str:token>/', views.VerifyEmailView.as_view(), name='verify-email'),
-    path('login/', auth_views.LoginView.as_view(
-        form_class=EmailAuthenticationForm,
-        template_name='registration/login.html'
-    ), name='login'),
+    path('login/', AnonymousUserLoginView.as_view(), name='login'),
+    path('update/', views.UserUpdateView.as_view(), name='update'),
+    path('email/change/', views.EmailChangeView.as_view(), name='email-change'),
+    path('email/verify/<str:token>/', views.VerifyEmailChangeView.as_view(), name='verify-email-change'),
 ]

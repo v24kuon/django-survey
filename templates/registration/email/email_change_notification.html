@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メールアドレスが変更されました</title>
+</head>
+
+<body style="font-family: sans-serif; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #333;">{{ user.full_name }} 様</h2>
+
+    <p>アカウントのメールアドレスが変更されました。</p>
+
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; margin: 20px 0;">
+        <p style="margin: 0;">
+            変更前: {{ old_email }}<br>
+            変更後: {{ new_email }}
+        </p>
+    </div>
+
+    <p>この変更に心当たりがない場合は、直ちに管理者にご連絡ください。</p>
+</body>
+
+</html>

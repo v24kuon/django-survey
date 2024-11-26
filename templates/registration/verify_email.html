@@ -15,9 +15,10 @@
                     {% if success %}
                     <div class="mb-4">
                         <h4 class="mb-3">認証が完了しました</h4>
-                        <p class="text-muted">メールアドレスの認証が正常に完了しました。</p>
+                        <p class="text-body-secondary">メールアドレスの認証が正常に完了しました。</p>
+                        <p class="text-body-secondary">マイページより追加の情報を入力することで、アンケートの回答に使用できます。</p>
                     </div>
-                    <a href="{% url 'login' %}" class="btn btn-primary">
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary">
                         ログインする
                     </a>
                     {% else %}
