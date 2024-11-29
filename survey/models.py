@@ -8,7 +8,43 @@
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
+
+class SurveyCategory(models.Model):
+    """アンケートカテゴリーモデル"""
+    name = models.CharField(
+        _('カテゴリー名'),
+        max_length=100,
+        help_text=_('カテゴリー名を100文字以内で入力してください。')
+    )
+    description = models.TextField(
+        _('説明'),
+        blank=True,
+        help_text=_('カテゴリーの説明を入力してください。')
+    )
+    order = models.IntegerField(
+        _('表示順'),
+        default=0
+    )
+    created_at = models.DateTimeField(_('作成日時'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('更新日時'), auto_now=True)
+
+    class Meta:
+        verbose_name = _('アンケートカテゴリー')
+        verbose_name_plural = _('アンケートカテゴリー')
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        """保存時に表示順を自動設定"""
+        if self._state.adding:  # 新規作成時のみ
+            # 現在の最大値を取得
+            max_order = SurveyCategory.objects.aggregate(
+                models.Max('order'))['order__max']
+            # None の場合は0、それ以外は最大値+1
+            self.order = (max_order or 0) + 1
+        super().save(*args, **kwargs)
 
 class Survey(models.Model):
     """アンケートモデル"""
@@ -16,6 +52,12 @@ class Survey(models.Model):
         _('タイトル'),
         max_length=200,
         help_text=_('アンケートのタイトルを200文字以内で入力してください。')
+    )
+    category = models.ForeignKey(
+        SurveyCategory,
+        verbose_name=_('カテゴリー'),
+        on_delete=models.PROTECT,
+        related_name='surveys'
     )
     description = models.TextField(
         _('説明'),

@@ -6,4 +6,5 @@ urlpatterns = [
     path('', include('survey.urls')),
     path('accounts/', include('accounts.urls')),  # カスタムビュー用
     path('accounts/', include('django.contrib.auth.urls')),  # 標準認証ビュー用
+    path('nested_admin/', include('nested_admin.urls')),
 ]

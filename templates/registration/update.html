@@ -41,18 +41,6 @@
                         <!-- ブース情報 -->
                         <h5 class="mb-3">ブース情報（任意）</h5>
                         <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control {% if form.organization_name.errors %}is-invalid{% endif %}" id="inputOrganizationName" name="organization_name" value="{{ form.organization_name.value|default:'' }}">
-                                    <label for="inputOrganizationName">団体名</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control {% if form.representative_name.errors %}is-invalid{% endif %}" id="inputRepresentativeName" name="representative_name" value="{{ form.representative_name.value|default:'' }}">
-                                    <label for="inputRepresentativeName">代表者名</label>
-                                </div>
-                            </div>
                             <div class="col-12">
                                 <div class="form-floating">
                                     <input type="text" class="form-control {% if form.booth_name.errors %}is-invalid{% endif %}" id="inputBoothName" name="booth_name" value="{{ form.booth_name.value|default:'' }}">
@@ -69,6 +57,22 @@
                                 <div class="form-floating">
                                     <textarea class="form-control {% if form.booth_description.errors %}is-invalid{% endif %}" id="inputBoothDescription" name="booth_description" style="height: 200px">{{ form.booth_description.value|default:'' }}</textarea>
                                     <label for="inputBoothDescription">ブースの詳細情報</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="mb-3">ステージ情報（任意）</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control {% if form.organization_name.errors %}is-invalid{% endif %}" id="inputOrganizationName" name="organization_name" value="{{ form.organization_name.value|default:'' }}">
+                                    <label for="inputOrganizationName">団体名</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control {% if form.representative_name.errors %}is-invalid{% endif %}" id="inputRepresentativeName" name="representative_name" value="{{ form.representative_name.value|default:'' }}">
+                                    <label for="inputRepresentativeName">代表者名</label>
                                 </div>
                             </div>
                         </div>
