@@ -190,4 +190,5 @@ class Answer(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.user} - {self.question}'
+        """モデルの文字列表現"""
+        return f'{self.question.survey.title} - {self.user.email}の回答'

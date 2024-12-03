@@ -1,0 +1,30 @@
+{% extends "survey/base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">{{ category.name }}のアンケート一覧</h2>
+
+    <div class="row">
+        {% for survey in surveys %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ survey.title }}</h5>
+                    <p class="card-text">{{ survey.summary }}</p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            公開期間: {{ survey.start_date|date:"Y/m/d" }} 〜 {{ survey.end_date|date:"Y/m/d" }}
+                        </small>
+                    </p>
+                    <a href="#" class="btn btn-primary">回答する</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">このカテゴリーにはまだアンケートがありません。</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

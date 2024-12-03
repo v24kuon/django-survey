@@ -11,38 +11,25 @@
         </li>
         <li class="nav-item">
             <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed nav-link text-white w-100" data-bs-toggle="collapse" data-bs-target="#survey-collapse" aria-expanded="false">
-                Survey
+                アンケート
             </button>
             <div class="collapse" id="survey-collapse">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="#" class="d-inline-flex text-decoration-none text-white ms-4 mb-1">Overview</a></li>
-                    <li><a href="#" class="d-inline-flex text-decoration-none text-white ms-4 mb-1">Weekly</a></li>
-                    <li><a href="#" class="d-inline-flex text-decoration-none text-white ms-4 mb-1">Monthly</a></li>
-                    <li><a href="#" class="d-inline-flex text-decoration-none text-white ms-4 mb-1">Annually</a></li>
+                    {% for category in survey_categories %}
+                    <li>
+                        <a href="{% url 'category_survey_list' category.id %}" class="d-inline-flex text-decoration-none text-white ms-4 mb-1">
+                            {{ category.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
                 </ul>
             </div>
-        </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link text-white">
-                Orders
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link text-white">
-                Products
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link text-white">
-                Customers
-            </a>
         </li>
     </ul>
     <hr>
     <div class="dropdown">
         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-            <strong>mdo</strong>
+            <strong>Username</strong>
         </a>
         <ul class="dropdown-menu dropdown-menu-dark text-small shadow" style="">
             <li><a class="dropdown-item" href="#">New project...</a></li>

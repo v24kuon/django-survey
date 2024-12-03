@@ -1,0 +1,86 @@
+{% extends "survey/base.html" %}
+
+{% block title %}{{ survey.title }}{% endblock title %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'category_survey_list' survey.category.id %}">{{ survey.category.name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ survey.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="mb-4">
+        <h1>{{ survey.title }}</h1>
+        <p class="text-muted">
+            公開期間: {{ survey.start_date|date:"Y/m/d" }} 〜 {{ survey.end_date|date:"Y/m/d" }}
+        </p>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">概要</h5>
+            <p class="card-text">{{ survey.summary }}</p>
+            <h5 class="card-title mt-4">説明</h5>
+            <p class="card-text">{{ survey.description }}</p>
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'survey_answer' survey.id %}">
+        {% csrf_token %}
+        {% for question in questions %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{ question.text }}
+                    {% if question.is_required %}
+                    <span class="text-danger">*</span>
+                    {% endif %}
+                </h5>
+
+                {% if question.question_type == 'text' %}
+                <input type="text" name="question_{{ question.id }}" class="form-control" {% if question.is_required %}required{% endif %}>
+
+                {% elif question.question_type == 'textarea' %}
+                <textarea name="question_{{ question.id }}" class="form-control" rows="3" {% if question.is_required %}required{% endif %}></textarea>
+
+                {% elif question.question_type == 'radio' %}
+                {% for choice in question.choices.all %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="{{ choice.id }}" id="choice_{{ choice.id }}" {% if question.is_required %}required{% endif %}>
+                    <label class="form-check-label" for="choice_{{ choice.id }}">
+                        {{ choice.text }}
+                    </label>
+                </div>
+                {% endfor %}
+
+                {% elif question.question_type == 'checkbox' %}
+                {% for choice in question.choices.all %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="question_{{ question.id }}" value="{{ choice.id }}" id="choice_{{ choice.id }}">
+                    <label class="form-check-label" for="choice_{{ choice.id }}">
+                        {{ choice.text }}
+                    </label>
+                </div>
+                {% endfor %}
+
+                {% elif question.question_type == 'select' %}
+                <select name="question_{{ question.id }}" class="form-select" {% if question.is_required %}required{% endif %}>
+                    <option value="">選択してください</option>
+                    {% for choice in question.choices.all %}
+                    <option value="{{ choice.id }}">{{ choice.text }}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">回答を送信</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}

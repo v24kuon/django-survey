@@ -1,0 +1,15 @@
+{% extends "survey/base.html" %}
+
+{% block title %}回答完了{% endblock title %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">回答ありがとうございました！</h4>
+        <p>アンケートへのご協力、誠にありがとうございます。</p>
+        <hr>
+        <p class="mb-0">他のアンケートにもぜひご参加ください。</p>
+    </div>
+    <a href="{% url 'home' %}" class="btn btn-primary">ホームに戻る</a>
+</div>
+{% endblock content %}

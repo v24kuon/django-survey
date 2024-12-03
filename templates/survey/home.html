@@ -4,6 +4,38 @@
 
 {% block content %}
 <div class="container py-4">
-    <h1>Home</h1>
+    <h1 class="mb-4">アンケート一覧</h1>
+
+    {% for category in survey_categories %}
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>{{ category.name }}</h2>
+            <a href="{% url 'category_survey_list' category.id %}" class="btn btn-outline-primary">もっと見る</a>
+        </div>
+
+        <div class="row">
+            {% for survey in category.surveys.all|slice:":2" %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ survey.title }}</h5>
+                        <p class="card-text">{{ survey.summary }}</p>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                公開期間: {{ survey.start_date|date:"Y/m/d" }} 〜 {{ survey.end_date|date:"Y/m/d" }}
+                            </small>
+                        </p>
+                        <a href="{% url 'survey_detail' survey.id %}" class="btn btn-primary">回答する</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-muted">このカテゴリーにはまだアンケートがありません。</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
 </div>
 {% endblock content %}
