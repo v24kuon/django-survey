@@ -1,0 +1,22 @@
+<div class="col-md-6 mb-4">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="card-title">{{ survey.title }}</h5>
+            <p class="card-text">{{ survey.summary }}</p>
+            <p class="card-text">
+                <small class="text-muted">
+                    公開期間: {{ survey.start_date|date:"Y/m/d" }} 〜 {{ survey.end_date|date:"Y/m/d" }}
+                </small>
+            </p>
+            {% if user.is_authenticated %}
+            {% if survey.id in answered_surveys %}
+            <button class="btn btn-secondary" disabled>回答済み</button>
+            {% else %}
+            <a href="{% url 'survey_detail' survey.id %}" class="btn btn-primary">回答する</a>
+            {% endif %}
+            {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-primary">ログインして回答</a>
+            {% endif %}
+        </div>
+    </div>
+</div>

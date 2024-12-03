@@ -11,6 +11,15 @@ class BaseContextMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['survey_categories'] = SurveyCategory.objects.all().order_by('order', 'name')
+
+        # ログインユーザーの回答済みアンケートを取得
+        if self.request.user.is_authenticated:
+            answered_surveys = set(
+                Answer.objects.filter(
+                    user=self.request.user
+                ).values_list('question__survey_id', flat=True).distinct()
+            )
+            context['answered_surveys'] = answered_surveys
         return context
 
 class HomeView(BaseContextMixin, TemplateView):
@@ -22,11 +31,6 @@ class HomeView(BaseContextMixin, TemplateView):
 class CategorySurveyListView(BaseContextMixin, ListView):
     """
     カテゴリー別のアンケート一覧を表示するビュー
-
-    Attributes:
-        model: 表示するモデル
-        template_name: 使用するテンプレート
-        context_object_name: テンプレートで使用するコンテキスト変数名
     """
     model = Survey
     template_name = 'survey/category_survey_list.html'
@@ -34,11 +38,10 @@ class CategorySurveyListView(BaseContextMixin, ListView):
 
     def get_queryset(self):
         """カテゴリーに属するアンケートを取得"""
-        self.category = get_object_or_404(SurveyCategory, pk=self.kwargs['category_id'])
-        return Survey.objects.filter(category=self.category)
+        self.category = get_object_or_404(SurveyCategory, pk=self.kwargs.get('category_id'))
+        return self.category.surveys.all()
 
     def get_context_data(self, **kwargs):
-        """コンテキストにカテゴリー情報を追加"""
         context = super().get_context_data(**kwargs)
         context['category'] = self.category
         return context
@@ -46,21 +49,21 @@ class CategorySurveyListView(BaseContextMixin, ListView):
 class SurveyDetailView(LoginRequiredMixin, BaseContextMixin, DetailView):
     """
     アンケート詳細・回答ページを表示するビュー
-
-    Attributes:
-        model: 表示するモデル
-        template_name: 使用するテンプレート
-        context_object_name: テンプレートで使用するコンテキスト変数名
-        login_url: ログインしていない場合のリダイレクト先
     """
     model = Survey
     template_name = 'survey/survey_detail.html'
     context_object_name = 'survey'
     login_url = 'accounts:login'
 
+    def get(self, request, *args, **kwargs):
+        # ユーザーがすでにこのアンケートに回答済みか確認
+        survey_id = self.kwargs['pk']
+        if Answer.objects.filter(user=request.user, question__survey_id=survey_id).exists():
+            return redirect('home')  # 回答済みの場合はホームにリダイレクト
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # 質問を表示順で取得
         context['questions'] = self.object.questions.all().order_by('order')
         return context
 
@@ -110,10 +113,8 @@ class SurveyAnswerView(LoginRequiredMixin, View):
                     answer.choices.set(choices)
 
         except Exception as e:
-            # エラーが発生した場合は元のページに戻る
             return redirect('survey_detail', survey.id)
 
-        # 完了ページにリダイレクト
         return redirect('survey_complete')
 
 class SurveyCompleteView(BaseContextMixin, TemplateView):
