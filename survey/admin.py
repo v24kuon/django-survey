@@ -14,9 +14,18 @@ from django.utils.safestring import mark_safe
 class QuestionChoiceInline(nested_admin.NestedTabularInline):
     """質問編集画面で選択肢を追加できるようにするインライン"""
     model = QuestionChoice
-    extra = 1
+    extra = 0
     min_num = 0
     sortable_field_name = "order"
+
+    def get_extra(self, request, obj=None, **kwargs):
+        """
+        新規作成時のみextra=1を返す
+        編集時はextra=0を返す
+        """
+        if obj is None:  # 新規作成時
+            return 1
+        return 0  # 編集時
 
 class QuestionInlineForm(ModelForm):
     """質問フォームのカスタマイズ"""
@@ -31,10 +40,19 @@ class QuestionInline(nested_admin.NestedTabularInline):
     """アンケート編集画面で質問を追加できるようにするインライン"""
     model = Question
     form = QuestionInlineForm
-    extra = 1
+    extra = 0
     inlines = [QuestionChoiceInline]
     fields = ('text', 'question_type', 'order', 'is_required')
     sortable_field_name = "order"
+
+    def get_extra(self, request, obj=None, **kwargs):
+        """
+        新規作成時のみextra=1を返す
+        編集時はextra=0を返す
+        """
+        if obj is None:  # 新規作成時
+            return 1
+        return 0  # 編集時
 
 class SurveyAdmin(nested_admin.NestedModelAdmin):
     """アンケート管理画面の設定"""
