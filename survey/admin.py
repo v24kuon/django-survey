@@ -67,6 +67,43 @@ class AnswerAdmin(admin.ModelAdmin):
         }),
     )
 
+    def get_queryset(self, request):
+        """アンケートごとに最初の回答のみを表示"""
+        return super().get_queryset(request).select_related(
+            'question__survey',
+            'user'
+        ).filter(
+            question__order=1
+        ).order_by(
+            'question__survey',
+            'user',
+            '-created_at'
+        )
+
+    def survey_title(self, obj):
+        """アンケートのタイトルを表示"""
+        return obj.question.survey.title
+    survey_title.short_description = 'アンケート'
+    survey_title.admin_order_field = 'question__survey__title'
+
+    def user_full_name(self, obj):
+        """回答者の氏名を表示"""
+        return obj.user.full_name
+    user_full_name.short_description = '氏名'
+    user_full_name.admin_order_field = 'user__full_name'
+
+    def user_email(self, obj):
+        """回答者のメールアドレスを表示"""
+        return obj.user.email
+    user_email.short_description = 'メールアドレス'
+    user_email.admin_order_field = 'user__email'
+
+    def answer_date(self, obj):
+        """回答日時を表示"""
+        return obj.created_at
+    answer_date.short_description = '回答日'
+    answer_date.admin_order_field = 'created_at'
+
     def all_answers(self, obj):
         """ユーザーの全回答を表示"""
         survey = obj.question.survey
@@ -93,44 +130,6 @@ class AnswerAdmin(admin.ModelAdmin):
         return mark_safe(''.join(html))
     all_answers.short_description = '回答内容'
 
-    def survey_title(self, obj):
-        """アンケートのタイトルを表示"""
-        return obj.question.survey.title
-    survey_title.short_description = 'アンケート'
-    survey_title.admin_order_field = 'question__survey__title'
-
-    def user_full_name(self, obj):
-        """回答者の氏名を表示"""
-        return obj.user.full_name
-    user_full_name.short_description = '氏名'
-    user_full_name.admin_order_field = 'user__full_name'
-
-    def user_email(self, obj):
-        """回答者のメールアドレスを表示"""
-        return obj.user.email
-    user_email.short_description = 'メールアドレス'
-    user_email.admin_order_field = 'user__email'
-
-    def answer_date(self, obj):
-        """回答日時を表示"""
-        return obj.created_at
-    answer_date.short_description = '回答日'
-    answer_date.admin_order_field = 'created_at'
-
-    def get_queryset(self, request):
-        """同じユーザーの同じアンケートへの回答をまとめて表示"""
-        queryset = super().get_queryset(request)
-        return queryset.select_related(
-            'question__survey',
-            'user'
-        ).filter(
-            question__order=1
-        ).order_by(
-            'question__survey',
-            'user',
-            '-created_at'
-        )
-
     def has_add_permission(self, request):
         """追加権限を無効化"""
         return False
@@ -138,6 +137,32 @@ class AnswerAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         """変更権限を無効化"""
         return False
+
+    def delete_model(self, request, obj):
+        """
+        回答を削除する際に、同じユーザーの同じアンケートの全ての回答を削除
+        """
+        survey = obj.question.survey
+        user = obj.user
+        Answer.objects.filter(
+            question__survey=survey,
+            user=user
+        ).delete()
+
+    def delete_queryset(self, request, queryset):
+        """
+        複数の回答を一括削除する際に、関連する全ての回答も削除
+        """
+        processed_pairs = set()  # (survey_id, user_id) のペアを記録
+
+        for obj in queryset:
+            pair = (obj.question.survey_id, obj.user_id)
+            if pair not in processed_pairs:
+                Answer.objects.filter(
+                    question__survey=obj.question.survey,
+                    user=obj.user
+                ).delete()
+                processed_pairs.add(pair)
 
 @admin.register(SurveyCategory)
 class SurveyCategoryAdmin(admin.ModelAdmin):

@@ -14,6 +14,9 @@ class BaseContextMixin:
         return context
 
 class HomeView(BaseContextMixin, TemplateView):
+    """
+    ホーム画面を表示するビュー
+    """
     template_name = 'survey/home.html'
 
 class CategorySurveyListView(BaseContextMixin, ListView):
@@ -106,12 +109,12 @@ class SurveyAnswerView(LoginRequiredMixin, View):
                     )
                     answer.choices.set(choices)
 
-            # 全ての回答が正常に保存された後にリダイレクト
-            return redirect('survey_complete')
-
         except Exception as e:
             # エラーが発生した場合は元のページに戻る
             return redirect('survey_detail', survey.id)
+
+        # 完了ページにリダイレクト
+        return redirect('survey_complete')
 
 class SurveyCompleteView(BaseContextMixin, TemplateView):
     """

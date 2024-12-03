@@ -25,7 +25,15 @@
                                 公開期間: {{ survey.start_date|date:"Y/m/d" }} 〜 {{ survey.end_date|date:"Y/m/d" }}
                             </small>
                         </p>
+                        {% if user.is_authenticated %}
+                        {% if survey.id in answered_surveys %}
+                        <button class="btn btn-secondary" disabled>回答済み</button>
+                        {% else %}
                         <a href="{% url 'survey_detail' survey.id %}" class="btn btn-primary">回答する</a>
+                        {% endif %}
+                        {% else %}
+                        <a href="{% url 'accounts:login' %}" class="btn btn-primary">ログインして回答</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
