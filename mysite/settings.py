@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-6sgo993b-r(pn#mg@&&+f4@+u8wtu7+x!y$tk+*tx++wnqu5fx
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+# ALLOWED_HOSTS = ['gtgshare006.xsrv.jp']
 
 # Application definition
 
@@ -119,7 +119,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = str(BASE_DIR.parent / 'static')  # プロジェクトルートの1階層上にstaticを配置
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

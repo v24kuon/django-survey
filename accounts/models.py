@@ -19,9 +19,10 @@ from django.template.loader import render_to_string
 
 def get_image_path(instance, filename):
     """チラシ画像のアップロードパスを生成"""
-    unique_id = uuid.uuid4()
+    directory_id = uuid.uuid4()
+    file_id = uuid.uuid4()
     extension = filename.split('.')[-1]
-    return os.path.join('flyers', str(unique_id), f"{uuid.uuid4()}.{extension}")
+    return os.path.join(str(directory_id), f"{file_id}.{extension}")
 
 class UserActivateToken(models.Model):
     """ユーザーアクティベーショントークンモデル"""
