@@ -34,13 +34,14 @@ jobs:
           DEFAULT_FROM_EMAIL='${{ secrets.DEFAULT_FROM_EMAIL }}'
           EOF
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: unnecessary
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          name: id_rsa
+      - name: ssh key generate
+        run: |
+          echo "$SSH_PRIVATE_KEY" > key
+          chmod 600 key
+          echo "$SSH_PASSPHRASE" | ssh-keygen -y -f key -p
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
       - name: rsync deploy
         run: rsync -auzrv --delete ./ $SSH_USER@$SSH_HOST:$DEPLOY_PATH --exclude ".git/" --exclude ".github/" -e "ssh -i key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT}"
