@@ -13,39 +13,21 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Create .env file
-        run: |
-          cat << EOF > .env
-          SECRET_KEY='${{ secrets.SECRET_KEY }}'
-          DEBUG=${{ secrets.DEBUG }}
-          ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
+      - name: ssh key generate
+        run: echo "$SSH_PRIVATE_KEY" > key && chmod 600 key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-          # DB設定
-          DB_NAME='${{ secrets.DB_NAME }}'
-          DB_USER='${{ secrets.DB_USER }}'
-          DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
-          DB_HOST='${{ secrets.DB_HOST }}'
-          DB_PORT=${{ secrets.DB_PORT }}
-
-          # Xserverメール設定
-          EMAIL_HOST='${{ secrets.EMAIL_HOST }}'
-          EMAIL_PORT=${{ secrets.EMAIL_PORT }}
-          EMAIL_HOST_USER='${{ secrets.EMAIL_HOST_USER }}'
-          EMAIL_HOST_PASSWORD='${{ secrets.EMAIL_HOST_PASSWORD }}'
-          DEFAULT_FROM_EMAIL='${{ secrets.DEFAULT_FROM_EMAIL }}'
-          EOF
-          cat .env
-
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: unnecessary
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          name: id_rsa
+      - name: create target directory
+        run: ssh -i key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST "mkdir -p $DEPLOY_PATH"
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
 
       - name: rsync deploy
-        run: rsync -auzrv --delete ./ $SSH_USER@$SSH_HOST:$DEPLOY_PATH --exclude ".git/" --exclude ".github/"  -e "ssh -i key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT}"
+        run: rsync -auzrv --delete ./ $SSH_USER@$SSH_HOST:$DEPLOY_PATH --exclude ".git/" --exclude ".github/" -e "ssh -i key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT}"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
