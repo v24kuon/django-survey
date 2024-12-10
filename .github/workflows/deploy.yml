@@ -13,31 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: unnecessary
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          name: id_rsa
-
-      - name: Debug SSH connection
+      - name: ssh key generate
         run: |
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa
-          ls -la ~/.ssh/
-          ssh-add -l
-          ssh -v -i ~/.ssh/id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $SSH_PORT $SSH_USER@$SSH_HOST 'pwd'
+          echo "$SSH_PRIVATE_KEY" > key
+          chmod 600 key
+          echo "$SSH_PASSPHRASE" | ssh-keygen -y -f key -p
         env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
       - name: rsync deploy
-        run: |
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa
-          rsync -auzrv --delete ./ $SSH_USER@$SSH_HOST:$DEPLOY_PATH --exclude ".git/" --exclude ".github/" -e "ssh -i ~/.ssh/id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT}"
+        run: rsync -auzrv --delete ./ $SSH_USER@$SSH_HOST:$DEPLOY_PATH --exclude ".git/" --exclude ".github/"  -e "ssh -i key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT}"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
