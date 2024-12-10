@@ -1,0 +1,30 @@
+name: deploy to remote
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Start SSH Agent
+        run: |
+          eval $(ssh-agent -s)
+          echo "$SSH_PRIVATE_KEY" | ssh-add -p "$SSH_PASSPHRASE" -
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+
+      - name: rsync deploy
+        run: rsync -auzrv --delete ./ $SSH_USER@$SSH_HOST:$DEPLOY_PATH --exclude ".git/" --exclude ".github/"  -e "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT}"
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}

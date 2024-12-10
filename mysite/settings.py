@@ -10,7 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+import pymysql
+
+# .envファイルを読み込む
+load_dotenv()
+
+# MySQLの設定
+pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +29,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6sgo993b-r(pn#mg@&&+f4@+u8wtu7+x!y$tk+*tx++wnqu5fx'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-6sgo993b-r(pn#mg@&&+f4@+u8wtu7+x!y$tk+*tx++wnqu5fx')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = ['gtgshare006.xsrv.jp']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') if os.environ.get('ALLOWED_HOSTS') else []
 
 # Application definition
 
@@ -78,8 +86,15 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql' if not DEBUG else 'django.db.backends.sqlite3',
+        'NAME': os.environ.get('DB_NAME', str(BASE_DIR / 'db.sqlite3')),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', '3306'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        } if not DEBUG else {},
     }
 }
 
@@ -119,10 +134,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = str(BASE_DIR.parent / 'static')  # プロジェクトルートの1階層上にstaticを配置
+STATIC_ROOT = str(BASE_DIR.parent / 'static')  # プロジェクトルートの1層上にstaticを配置
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-MEDIA_URL = '/media/'
+# 開発環境と本番環境で異なる設定を使用
+if DEBUG:
+    MEDIA_URL = '/media/'
+else:
+    # 本番環境用の設定
+    MEDIA_URL = '/pollapp/media/'
+
+# メディアファイルの保存場所
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
@@ -146,12 +168,15 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
-# メール関連の設定（開発環境用）
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'hoge@hoge.com'
-EMAIL_HOST_USER = 'hoge@hoge.com'
-EMAIL_HOST_PASSWORD = 'password'
-EMAIL_USE_TLS = True
+# メール関連の設定
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    # 本番環境用の設定（Xserver SMTP）
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST')  # SMTPサーバー
+    EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)  # STARTTLS用ポート
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')  # メールアカウント
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')  # パスワード
+    EMAIL_USE_TLS = True  # STARTTLS使用
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')  # 送信元アドレス
