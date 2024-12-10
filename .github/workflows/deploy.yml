@@ -13,17 +13,42 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: ssh key generate
+      - name: Create .env file
         run: |
-          echo "$SSH_PRIVATE_KEY" > key
-          chmod 600 key
-          echo "$SSH_PASSPHRASE" | ssh-keygen -y -f key -p
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+          cat << EOF > .env
+          SECRET_KEY='${{ secrets.SECRET_KEY }}'
+          DEBUG=${{ secrets.DEBUG }}
+          ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
+
+          # DB設定
+          DB_NAME='${{ secrets.DB_NAME }}'
+          DB_USER='${{ secrets.DB_USER }}'
+          DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
+          DB_HOST='${{ secrets.DB_HOST }}'
+          DB_PORT=${{ secrets.DB_PORT }}
+
+          # Xserverメール設定
+          EMAIL_HOST='${{ secrets.EMAIL_HOST }}'
+          EMAIL_PORT=${{ secrets.EMAIL_PORT }}
+          EMAIL_HOST_USER='${{ secrets.EMAIL_HOST_USER }}'
+          EMAIL_HOST_PASSWORD='${{ secrets.EMAIL_HOST_PASSWORD }}'
+          DEFAULT_FROM_EMAIL='${{ secrets.DEFAULT_FROM_EMAIL }}'
+          EOF
+          cat .env
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          name: id_rsa
 
       - name: rsync deploy
-        run: rsync -auzrv --delete ./ $SSH_USER@$SSH_HOST:$DEPLOY_PATH --exclude ".git/" --exclude ".github/"  -e "ssh -i key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT}"
+        run: |
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+          rsync -auzrv --delete ./ $SSH_USER@$SSH_HOST:$DEPLOY_PATH --exclude ".git/" --exclude ".github/" -e "ssh -i ~/.ssh/id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${SSH_PORT}"
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
